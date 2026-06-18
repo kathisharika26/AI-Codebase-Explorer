@@ -1,4 +1,5 @@
 import DashboardGrid from "../../components/dashboard/DashboardGrid";
+import UploadCard from "../../components/upload/UploadCard";
 
 function Dashboard() {
   return (
@@ -8,6 +9,7 @@ function Dashboard() {
 
      <>
   <DashboardGrid />
+  <UploadCard />
 </>
     </div>
   );
