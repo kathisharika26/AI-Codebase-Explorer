@@ -1,3 +1,4 @@
+import api from "../../services/api";
 import "./UploadCard.css";
 import { useRef, useState } from "react";
 
@@ -6,16 +7,48 @@ function UploadCard() {
 
     const [selectedFile, setSelectedFile] = useState("");
     const [progress, setProgress] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const [files, setFiles] = useState<string[]>([]);
     const handleChooseFile = () => {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (
+    const handleFileChange = async (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
+
         const file = event.target.files?.[0];
 
         if (file) {
+
+            if (!file.name.endsWith(".zip")) {
+                alert("Please upload only ZIP files.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await api.post("/upload", formData);
+
+                console.log("Success:", response.data);
+                const filesResponse = await api.get("/files");
+                setFiles(filesResponse.data.files);
+
+                alert("Upload Successful!");
+
+            } catch (error: any) {
+
+                console.log(error);
+
+                console.log(error.response);
+
+                console.log(error.message);
+
+                alert(error.message);
+            }
+
             setSelectedFile(file.name);
 
             setProgress(0);
@@ -34,8 +67,45 @@ function UploadCard() {
         }
     };
 
+
     return (
-        <div className="upload-card">
+        <div
+            className={`upload-card ${isDragging ? "dragging" : ""}`}
+            onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+
+                const file = e.dataTransfer.files[0];
+
+                if (file) {
+
+                    if (!file.name.endsWith(".zip")) {
+                        alert("Please upload only ZIP files.");
+                        return;
+                    }
+
+                    setSelectedFile(file.name);
+
+                    setProgress(0);
+
+                    let value = 0;
+
+                    const timer = setInterval(() => {
+                        value += 10;
+                        setProgress(value);
+
+                        if (value >= 100) {
+                            clearInterval(timer);
+                        }
+                    }, 200);
+                }
+            }}
+        >
             <div className="upload-icon">📦</div>
 
             <h2>Upload Project ZIP</h2>
@@ -59,7 +129,7 @@ function UploadCard() {
                 onChange={handleFileChange}
             />
 
-                        {selectedFile && (
+            {selectedFile && (
                 <>
                     <div className="selected-file">
                         ✅ Selected File:
@@ -73,11 +143,21 @@ function UploadCard() {
                             style={{ width: `${progress}%` }}
                         ></div>
                     </div>
+                    {files.length > 0 && (
+                        <div className="selected-file">
+                            <h3>📂 Project Files</h3>
+
+                            {files.map((file, index) => (
+                                <p key={index}>📄 {file}</p>
+                            ))}
+                        </div>
+                    )}
 
                     <p>{progress}% Uploaded</p>
                 </>
             )}
         </div>
+
     );
 }
 

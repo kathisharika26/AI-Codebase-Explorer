@@ -67,3 +67,9 @@
     width: 0%;
     transition: width 0.2s;
 }
+
+.dragging {
+    border: 3px dashed #22c55e;
+    background: #233554;
+    transition: 0.3s;
+}
