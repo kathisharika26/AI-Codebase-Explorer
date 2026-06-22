@@ -1,4 +1,5 @@
 import api from "../../services/api";
+import FileExplorer from "../explorer/FileExplorer";
 import "./UploadCard.css";
 import { useRef, useState } from "react";
 
@@ -143,17 +144,13 @@ function UploadCard() {
                             style={{ width: `${progress}%` }}
                         ></div>
                     </div>
-                    {files.length > 0 && (
-                        <div className="selected-file">
-                            <h3>📂 Project Files</h3>
-
-                            {files.map((file, index) => (
-                                <p key={index}>📄 {file}</p>
-                            ))}
-                        </div>
-                    )}
 
                     <p>{progress}% Uploaded</p>
+
+                    {files.length > 0 && (
+                        <FileExplorer files={files} />
+                    )}
+
                 </>
             )}
         </div>
