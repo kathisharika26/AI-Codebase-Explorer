@@ -1,17 +1,22 @@
 import "./FileExplorer.css";
 
-type Props = {
+interface FileExplorerProps {
     files: string[];
-};
+}
 
-function FileExplorer({ files }: Props) {
+function FileExplorer({ files }: FileExplorerProps) {
     return (
         <div className="file-explorer">
-            <h3>📂 Project Files</h3>
+            <h3>📁 Project Files</h3>
 
-            {files.map((file, index) => (
-                <p key={index}>📄 {file}</p>
-            ))}
+            <div className="file-list">
+                {files.map((file, index) => (
+                    <div className="file-item" key={index}>
+                        <span className="file-icon">📄</span>
+                        <span>{file}</span>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
