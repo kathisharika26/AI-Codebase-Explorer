@@ -1,6 +1,6 @@
+from fastapi import FastAPI, UploadFile, File, Query
 import zipfile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, UploadFile, File
 import os
 import shutil
 
@@ -16,6 +16,7 @@ app.add_middleware(
 
 UPLOAD_FOLDER = "uploads"
 EXTRACT_FOLDER = "extracted"
+CURRENT_PROJECT = "sample-project"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(EXTRACT_FOLDER, exist_ok=True)
@@ -27,9 +28,10 @@ def home():
         "message": "AI Codebase Explorer Backend Running!"
     }
 
-
 @app.post("/upload")
 async def upload_project(file: UploadFile = File(...)):
+    global CURRENT_PROJECT
+
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
 
     # Save ZIP
@@ -42,6 +44,8 @@ async def upload_project(file: UploadFile = File(...)):
         file.filename.replace(".zip", "")
     )
 
+    CURRENT_PROJECT = file.filename.replace(".zip", "")
+
     with zipfile.ZipFile(file_path, "r") as zip_ref:
         zip_ref.extractall(extract_path)
 
@@ -50,10 +54,24 @@ async def upload_project(file: UploadFile = File(...)):
         "filename": file.filename
     }
 
+@app.get("/file")
+def get_file_content(path: str = Query(...)):
+    project_path = os.path.join(EXTRACT_FOLDER, CURRENT_PROJECT)
+
+    file_path = os.path.join(project_path, path)
+
+    with open(file_path, "r", encoding="utf-8") as file:
+        content = file.read()
+
+    return {
+        "filename": path,
+        "content": content
+    }
+
 
 @app.get("/files")
 def get_files():
-    project_path = os.path.join(EXTRACT_FOLDER, "sample-project")
+    project_path = os.path.join(EXTRACT_FOLDER, CURRENT_PROJECT)
 
     files = []
 
