@@ -41,6 +41,7 @@ function FileExplorer({ files }: FileExplorerProps) {
             <div className="file-explorer">
 
                 <h3>📁 Project Files</h3>
+                <p>📊 Total Files: {files.length}</p>
 
                 <div className="file-list">
 
@@ -65,8 +66,8 @@ function FileExplorer({ files }: FileExplorerProps) {
 
                                 <div
                                     className={`file-item ${selectedFile === file
-                                            ? "active-file"
-                                            : ""
+                                        ? "active-file"
+                                        : ""
                                         }`}
                                     onClick={() => openFile(file)}
                                 >
