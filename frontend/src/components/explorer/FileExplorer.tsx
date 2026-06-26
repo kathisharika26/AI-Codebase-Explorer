@@ -112,7 +112,7 @@ function FileExplorer({
                 {selectedFile ? (
 
                     <>
-                        <h2>{selectedFile}</h2>
+                        <h2>{selectedFile.split("/").pop()}</h2>
 
                         <pre>{content}</pre>
                     </>
