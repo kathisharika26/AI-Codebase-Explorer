@@ -4,9 +4,13 @@ import "./FileExplorer.css";
 
 interface FileExplorerProps {
     files: string[];
+    projectName: string;
 }
 
-function FileExplorer({ files }: FileExplorerProps) {
+function FileExplorer({
+    files,
+    projectName
+}: FileExplorerProps) {
 
     const [selectedFile, setSelectedFile] = useState("");
     const [content, setContent] = useState("");
@@ -41,7 +45,14 @@ function FileExplorer({ files }: FileExplorerProps) {
             <div className="file-explorer">
 
                 <h3>📁 Project Files</h3>
-                <p>📊 Total Files: {files.length}</p>
+
+                <p className="project-info">
+                    📂 Project : <strong>{projectName}</strong>
+                </p>
+
+                <p className="project-info">
+                    📊 Total Files : <strong>{files.length}</strong>
+                </p>
 
                 <div className="file-list">
 
@@ -54,11 +65,20 @@ function FileExplorer({ files }: FileExplorerProps) {
                         const folderName =
                             parts.length > 1 ? parts[0] : "";
 
+                        const previousFile =
+                            index > 0 ? files[index - 1] : "";
+
+                        const previousFolder =
+                            previousFile.split("/")[0];
+
+                        const showFolder =
+                            folderName !== previousFolder;
+
                         return (
 
                             <div key={index}>
 
-                                {folderName && (
+                                {showFolder && folderName && (
                                     <div className="folder-name">
                                         📁 {folderName}
                                     </div>

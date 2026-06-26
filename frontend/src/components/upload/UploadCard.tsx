@@ -148,7 +148,10 @@ function UploadCard() {
                     <p>{progress}% Uploaded</p>
 
                     {files.length > 0 && (
-                        <FileExplorer files={files} />
+                        <FileExplorer
+                            files={files}
+                            projectName={selectedFile.replace(".zip", "")}
+                        />
                     )}
 
                 </>
