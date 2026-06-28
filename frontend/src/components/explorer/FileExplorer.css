@@ -118,3 +118,15 @@
     margin-bottom:10px;
     font-size:15px;
 }
+
+.folder-name {
+    color: #7fb3ff;
+    font-weight: bold;
+    padding: 8px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.folder-name:hover {
+    color: white;
+}

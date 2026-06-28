@@ -16,6 +16,7 @@ function FileExplorer({
 
     const [selectedFile, setSelectedFile] = useState("");
     const [content, setContent] = useState("");
+    const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
 
     const openFile = async (file: string) => {
 
@@ -39,6 +40,24 @@ function FileExplorer({
         }
 
     };
+    const toggleFolder = (folder: string) => {
+
+        if (expandedFolders.includes(folder)) {
+
+            setExpandedFolders(
+                expandedFolders.filter(f => f !== folder)
+            );
+
+        } else {
+
+            setExpandedFolders([
+                ...expandedFolders,
+                folder
+            ]);
+
+        }
+
+    };
 
     return (
 
@@ -58,6 +77,18 @@ function FileExplorer({
 
                 <div className="file-list">
 
+                    {folders.map((folder) => (
+
+                        <div
+                            key={folder}
+                            className="folder-name"
+                            onClick={() => toggleFolder(folder)}
+                        >
+                            {expandedFolders.includes(folder) ? "📂" : "📁"} {folder}
+                        </div>
+
+                    ))}
+
                     {files.map((file, index) => {
 
                         const parts = file.split("/");
@@ -66,6 +97,13 @@ function FileExplorer({
 
                         const folderName =
                             parts.length > 1 ? parts[0] : "";
+
+                        if (
+                            folderName &&
+                            !expandedFolders.includes(folderName)
+                        ) {
+                            return null;
+                        }
 
                         const previousFile =
                             index > 0 ? files[index - 1] : "";
