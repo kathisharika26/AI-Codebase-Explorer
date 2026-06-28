@@ -10,6 +10,7 @@ function UploadCard() {
     const [progress, setProgress] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
     const [files, setFiles] = useState<string[]>([]);
+    const [folders, setFolders] = useState<string[]>([]);
     const handleChooseFile = () => {
         fileInputRef.current?.click();
     };
@@ -35,7 +36,9 @@ function UploadCard() {
 
                 console.log("Success:", response.data);
                 const filesResponse = await api.get("/files");
+
                 setFiles(filesResponse.data.files);
+                setFolders(filesResponse.data.folders);
 
                 alert("Upload Successful!");
 
@@ -150,6 +153,7 @@ function UploadCard() {
                     {files.length > 0 && (
                         <FileExplorer
                             files={files}
+                            folders={folders}
                             projectName={selectedFile.replace(".zip", "")}
                         />
                     )}

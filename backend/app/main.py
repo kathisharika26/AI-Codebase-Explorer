@@ -106,31 +106,49 @@ IGNORED_EXTENSIONS = {
 
 @app.get("/files")
 def get_files():
-    project_path = os.path.join(EXTRACT_FOLDER, CURRENT_PROJECT)
-
-    if not os.path.isdir(project_path):
-        return {"files": [], "error": f"Project folder not found: {CURRENT_PROJECT}"}
+    project_path = os.path.join(
+        EXTRACT_FOLDER,
+        CURRENT_PROJECT,
+        CURRENT_PROJECT
+    )
 
     files = []
+    folders = set()
 
     for root, dirs, filenames in os.walk(project_path):
-        # Skip ignored directories in-place so os.walk won't descend into them
-        dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
 
+        # Ignore unwanted folders
+        dirs[:] = [
+            d for d in dirs
+            if d not in IGNORED_DIRS
+        ]
+
+        # Add folders
+        for directory in dirs:
+            relative_folder = os.path.relpath(
+                os.path.join(root, directory),
+                project_path
+            ).replace("\\", "/")
+            folders.add(relative_folder)
+
+        # Add files
         for filename in filenames:
-            _, ext = os.path.splitext(filename)
-            if ext.lower() in IGNORED_EXTENSIONS:
+
+            # Ignore unwanted file extensions
+            if os.path.splitext(filename)[1] in IGNORED_EXTENSIONS:
                 continue
 
-            relative_path = os.path.relpath(
+            relative_file = os.path.relpath(
                 os.path.join(root, filename),
                 project_path
-            )
-            # Normalise to forward slashes for cross-platform consistency
-            files.append(relative_path.replace("\\", "/"))
+            ).replace("\\", "/")
+
+            files.append(relative_file)
 
     return {
-        "files": files,
         "project": CURRENT_PROJECT,
-        "total": len(files)
+        "total_files": len(files),
+        "total_folders": len(folders),
+        "folders": sorted(list(folders)),
+        "files": sorted(files)
     }

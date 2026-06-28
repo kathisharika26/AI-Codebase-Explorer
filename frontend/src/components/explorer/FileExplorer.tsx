@@ -4,11 +4,13 @@ import "./FileExplorer.css";
 
 interface FileExplorerProps {
     files: string[];
+    folders: string[];
     projectName: string;
 }
 
 function FileExplorer({
     files,
+    folders,
     projectName
 }: FileExplorerProps) {
 
