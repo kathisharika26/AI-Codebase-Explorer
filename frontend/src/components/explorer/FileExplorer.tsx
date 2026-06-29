@@ -18,6 +18,27 @@ function FileExplorer({
     const [content, setContent] = useState("");
     const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
 
+    const toggleFolder = (folder: string) => {
+
+        console.log("Clicked:", folder);
+
+        if (expandedFolders.includes(folder)) {
+
+            setExpandedFolders(
+                expandedFolders.filter(f => f !== folder)
+            );
+
+        } else {
+
+            setExpandedFolders([
+                ...expandedFolders,
+                folder
+            ]);
+
+        }
+
+    };
+
     const openFile = async (file: string) => {
 
         try {
@@ -34,26 +55,7 @@ function FileExplorer({
         } catch (error) {
 
             console.log(error);
-
             alert("Unable to open file.");
-
-        }
-
-    };
-    const toggleFolder = (folder: string) => {
-
-        if (expandedFolders.includes(folder)) {
-
-            setExpandedFolders(
-                expandedFolders.filter(f => f !== folder)
-            );
-
-        } else {
-
-            setExpandedFolders([
-                ...expandedFolders,
-                folder
-            ]);
 
         }
 
@@ -79,69 +81,71 @@ function FileExplorer({
 
                     {folders.map((folder) => (
 
-                        <div
-                            key={folder}
-                            className="folder-name"
-                            onClick={() => toggleFolder(folder)}
-                        >
-                            {expandedFolders.includes(folder) ? "📂" : "📁"} {folder}
+                        <div key={folder}>
+
+                            <div
+                                className="folder-name"
+                                onClick={() => toggleFolder(folder)}
+                            >
+                                {expandedFolders.includes(folder)
+                                    ? "📂"
+                                    : "📁"}{" "}
+                                {folder}
+                            </div>
+
+                            {expandedFolders.includes(folder) &&
+
+                                files
+                                    .filter(file =>
+                                        file.startsWith(folder + "/")
+                                    )
+                                    .map(file => (
+
+                                        <div
+                                            key={file}
+                                            className={`file-item ${selectedFile === file
+                                                    ? "active-file"
+                                                    : ""
+                                                }`}
+                                            onClick={() => openFile(file)}
+                                        >
+                                            <span className="file-icon">
+                                                📄
+                                            </span>
+
+                                            <span>
+                                                {file.split("/").pop()}
+                                            </span>
+
+                                        </div>
+
+                                    ))
+
+                            }
+
                         </div>
 
                     ))}
 
-                    {files.map((file, index) => {
+                    {files
+                        .filter(file => !file.includes("/"))
+                        .map(file => (
 
-                        const parts = file.split("/");
-
-                        const fileName = parts[parts.length - 1];
-
-                        const folderName =
-                            parts.length > 1 ? parts[0] : "";
-
-                        if (
-                            folderName &&
-                            !expandedFolders.includes(folderName)
-                        ) {
-                            return null;
-                        }
-
-                        const previousFile =
-                            index > 0 ? files[index - 1] : "";
-
-                        const previousFolder =
-                            previousFile.split("/")[0];
-
-                        const showFolder =
-                            folderName !== previousFolder;
-
-                        return (
-
-                            <div key={index}>
-
-                                {showFolder && folderName && (
-                                    <div className="folder-name">
-                                        📁 {folderName}
-                                    </div>
-                                )}
-
-                                <div
-                                    className={`file-item ${selectedFile === file
+                            <div
+                                key={file}
+                                className={`file-item ${selectedFile === file
                                         ? "active-file"
                                         : ""
-                                        }`}
-                                    onClick={() => openFile(file)}
-                                >
-                                    <span className="file-icon">📄</span>
+                                    }`}
+                                onClick={() => openFile(file)}
+                            >
+                                <span className="file-icon">📄</span>
 
-                                    <span>{fileName}</span>
-
-                                </div>
+                                <span>{file}</span>
 
                             </div>
 
-                        );
-
-                    })}
+                        ))}
 
                 </div>
 
@@ -168,6 +172,7 @@ function FileExplorer({
         </div>
 
     );
+
 }
 
 export default FileExplorer;

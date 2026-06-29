@@ -80,9 +80,22 @@ async def upload_project(file: UploadFile = File(...)):
 
 @app.get("/file")
 def get_file_content(path: str = Query(...)):
-    project_path = os.path.join(EXTRACT_FOLDER, CURRENT_PROJECT)
+
+    project_path = os.path.join(
+        EXTRACT_FOLDER,
+        CURRENT_PROJECT,
+        CURRENT_PROJECT
+    )
 
     file_path = os.path.join(project_path, path)
+
+    print("Opening:", file_path)
+
+    if not os.path.exists(file_path):
+        return {
+            "error": "File not found",
+            "path": file_path
+        }
 
     with open(file_path, "r", encoding="utf-8") as file:
         content = file.read()
@@ -91,7 +104,6 @@ def get_file_content(path: str = Query(...)):
         "filename": path,
         "content": content
     }
-
 
 IGNORED_DIRS = {
     "node_modules", ".git", "dist", "build", ".next", "__pycache__",
